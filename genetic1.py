@@ -17,6 +17,7 @@ class Individual:
         self.lenght = lenght
         self.fitness = 0
         self.objective = self.set_objective(objective)
+        self.ilness = False
         if len(dna) == 0:
             self.dna = self.generate_dna()
         else:
@@ -38,8 +39,8 @@ class Individual:
         return res
 
     def mutate(self):
-        if self.fitness > random.uniform(0.0, 0.9):
-        #if 0.5 <= random.uniform(0.0, 1.0):
+        #if self.fitness > random.uniform(0.0, 0.9):
+        if random.uniform(0.0, 0.5) <= random.uniform(0.0, 1.0):
             n = random.randint(0, (self.lenght // 2))
             for i in range(n):
                 self.dna[random.randint(0, self.lenght-1)] = choice(chars)
@@ -121,8 +122,9 @@ while 1:
     pop = new_gen
     gen += 1
     for ind in pop:
-        ind.show()
+        #ind.show()
         if ind.dna == ind.objective:
+            ind.show()
             print(gen)
             found = True
             break
@@ -130,4 +132,4 @@ while 1:
         print("Population avg fitness:" + str(current_fitness))
         break
 
-    if gen % 100 == 0: elitism += 0.001
+    elitism = (current_fitness / 10) * 2
