@@ -76,7 +76,7 @@ current_fitness = 0
 found = False
 while 1:
     for ind in pop:
-        find.show()
+        ind.show()
         ind.calc_fitness()
         if ind.dna == ind.objective:
             ind.show()
