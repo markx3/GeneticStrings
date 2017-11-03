@@ -62,7 +62,7 @@ class Individual():
 
 
 
-obj = "ramon eh cuzao"
+obj = "hello, world"
 num_individuals = 100
 
 pop = [Individual(lenght=len(obj), objective=obj) for n in range(num_individuals)]
