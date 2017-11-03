@@ -67,7 +67,7 @@ class Individual():
 obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse molestie ut nisi et condimentum. Proin pharetra, neque ut eleifend dignissim, sapien est aliquet lorem, at ullamcorper quam libero eget orci. Nunc dapibus dui quis nisi sodales, ac pharetra neque porttitor. Pellentesque rutrum vestibulum volutpat. Quisque tincidunt auctor dolor, eu ultricies mi suscipit quis. Nam dolor metus, facilisis nec lorem aliquam, lacinia sollicitudin neque. Morbi at egestas eros. Nunc molestie, turpis id iaculis congue, diam elit commodo tellus, a eleifend risus nibh eu lacus. Nunc pellentesque dui et quam aliquet, eget auctor ipsum porttitor."
 obj = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 num_individuals = 100
-modifier = 0 # Selection easening
+modifier = 0.1 # Selection easening
 
 pop = [Individual(lenght=len(obj), objective=obj) for n in range(num_individuals)]
 print(pop[1].dna)
@@ -98,10 +98,8 @@ while 1:
     print(len(pop_best))
     if len(pop_best) < 10:
         modifier += 0.1
-        print("Mod up!")
-    if modifier >= 0.5 and len(pop_best) >= 10:
+    if modifier >= 0.5:
         modifier -= 0.1
-        print("Mod too high, going down.")
 
 
     new_gen = []
