@@ -26,8 +26,7 @@ class Individual:
 
     def crossover(self, other):
         new_dna = []
-
-        half = len(self.dna) // 2
+        half = random.randint(1, len(self.dna)-1)
         new_dna = self.dna[0:half] + other.dna[half:]
         res = Individual(self.lenght, dna=new_dna, objective=self.objective)
         res.calc_fitness()
@@ -149,6 +148,7 @@ class Population:
 
 if __name__ == "__main__":
     obj = "Hello, world."
+    #obj = "Unicorns are fun. Dinosaurs too."
     population = Population(obj,
                             elitism=0.01,
                             num_ind=2048,
