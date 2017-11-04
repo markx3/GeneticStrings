@@ -13,7 +13,7 @@ lines = os.get_terminal_size().lines
 chars = string.ascii_letters + ',' + '.' + ' '
 
 class Individual:
-    def __init__(self, lenght, dna=[], objective=""):
+    def __init__(self, lenght, dna=[], objective="", mutation=0.05):
         self.lenght = lenght
         self.fitness = 0
         self.objective = self.set_objective(objective)
@@ -22,14 +22,10 @@ class Individual:
             self.dna = self.generate_dna()
         else:
             self.dna = dna
+        self.mutation = mutation
 
     def crossover(self, other):
         new_dna = []
-        # for i in range(len(self.dna)):
-        #     if i % 2 == 0:
-        #         new_dna.append(self.dna[i])
-        #     else:
-        #         new_dna.append(other.dna[i])
 
         half = len(self.dna) // 2
         new_dna = self.dna[0:half] + other.dna[half:]
@@ -40,7 +36,7 @@ class Individual:
 
     def mutate(self):
         #if self.fitness > random.uniform(0.0, 0.9):
-        if random.uniform(0.0, 0.5) <= random.uniform(0.0, 1.0):
+        if self.mutation >= random.uniform(0.0, 1.0):
             n = random.randint(0, (self.lenght // 2))
             for i in range(n):
                 self.dna[random.randint(0, self.lenght-1)] = choice(chars)
@@ -71,65 +67,92 @@ class Individual:
             res.append(random.choice(chars))
         return res
 
+class Population:
 
+    gen = 1
+    avg_fitness = 0
+    found = False
 
-#obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse molestie ut nisi et condimentum. Proin pharetra, neque ut eleifend dignissim, sapien est aliquet lorem, at ullamcorper quam libero eget orci. Nunc dapibus dui quis nisi sodales, ac pharetra neque porttitor. Pellentesque rutrum vestibulum volutpat. Quisque tincidunt auctor dolor, eu ultricies mi suscipit quis. Nam dolor metus, facilisis nec lorem aliquam, lacinia sollicitudin neque. Morbi at egestas eros."
-obj = "Unicorns are fun. Dinosaurs too."
-#obj = "hello, worldee"
-num_individuals = 2048
-modifier = 0.01 # Selection easening
-gen = 1
-elitism = 0.1
+    def __init__(self,
+                 objective,
+                 elitism=0.01,
+                 num_ind=2048,
+                 crossover=0.8,
+                 mutation=0.05):
+        self.objective  = objective
+        self.num_individuals = num_ind
+        self.elitism = elitism
+        self.crossover = crossover
+        self.mutation = mutation
+        self.individuals = self.setup_population()
 
-def tournament(population):
-    best = choice(population)
-    for i in range(3):
-        aux = choice(population)
-        if (aux.fitness > best.fitness): best = aux
-    return best
+    def setup_population(self):
+        l = len(self.objective)
+        return [Individual(lenght=l,
+                           objective=self.objective,
+                           mutation=self.mutation)
+                for n in range(self.num_individuals)]
 
-pop = [Individual(lenght=len(obj), objective=obj) for n in range(num_individuals)]
-print(pop[1].dna)
-print(pop[1].objective)
-current_fitness = 0
-found = False
-for ind in pop:
-    ind.calc_fitness()
+    def tournament(self, individuals):
+        best = choice(individuals)
+        for i in range(3):
+            adversary = choice(individuals)
+            if (adversary.fitness > best.fitness):
+                best = adversary
+        return best
 
-idx = round(elitism * num_individuals)
+    def select_parents(self, individuals):
+        p1 = self.tournament(individuals)
+        p2 = self.tournament(individuals)
+        if random.uniform(0, 1) < 0.8:
+            c1 = p1.crossover(p2)
+            c2 = p2.crossover(p1)
+            return c1, c2
+        else:
+            return p1, p2
 
-while 1:
+    def get_elite(self, best_individuals):
+        idx = round(self.elitism * self.num_individuals)
+        return best_individuals[:idx]
 
+    def run(self):
+        best_individuals = sorted(self.individuals,
+                                  key = lambda x : x.fitness,
+                                  reverse=True)
+        self.avg_fitness = np.average([ind.fitness
+                                       for ind in best_individuals])
+        new_individuals = self.get_elite(best_individuals)
+        print(len(new_individuals))
 
-    #pop_best = list(filter(lambda x : x.fitness > current_fitness-modifier, pop))
-    best_individuals = sorted(pop, key = lambda x : x.fitness, reverse=True)
-    fitness_list = [ind.fitness for ind in best_individuals]
-    current_fitness = np.average(fitness_list)
+        while len(new_individuals) != self.num_individuals:
+            c1, c2 = self.select_parents(best_individuals)
+            new_individuals.append(c1)
+            new_individuals.append(c2)
 
-    print("Gen " + str(gen) + "\tavg. fitness: " + str(current_fitness)
-         + "\tElitism: " + str(elitism))
-    print()
+        self.individuals = new_individuals
+        self.gen += 1
 
-    new_gen = []
+        for ind in self.individuals:
+            if ind.objective === ind.dna:
+                self.found = True
 
-    while len(new_gen) != num_individuals:
-        ind1 = tournament(best_individuals[:idx])
-        ind2 = tournament(best_individuals[:idx])
-        if random.uniform(0, 1) <= 0.8:
-            new_gen.append(ind1.crossover(ind2))
-            new_gen.append(ind2.crossover(ind1))
-
-    pop = new_gen
-    gen += 1
-    for ind in pop:
-        #ind.show()
-        if ind.dna == ind.objective:
+    def show(self):
+        for ind in self.individuals:
             ind.show()
-            print(gen)
-            found = True
-            break
-    if found:
-        print("Population avg fitness:" + str(current_fitness))
-        break
+        print("Gen "
+              + str(self.gen)
+              + "\tavg. fitness: "
+              + str(self.avg_fitness)
+              + "\tElitism: " + str(self.elitism))
 
-    elitism = (current_fitness / 10) * 2
+
+if __name__ == "__main__":
+    obj = "Hello, world."
+    population = Population(obj,
+                            elitism=0.01,
+                            num_ind=2048,
+                            crossover=0.8,
+                            mutation=0.05)
+    while not population.found:
+        population.run()
+        population.show()
