@@ -149,7 +149,7 @@ class Population:
 if __name__ == "__main__":
     obj = "Hello, world."
     population = Population(obj,
-                            elitism=0.02,
+                            elitism=0.01,
                             num_ind=2048,
                             crossover=0.8,
                             mutation=0.05)
