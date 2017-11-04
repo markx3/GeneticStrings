@@ -133,7 +133,7 @@ class Population:
         self.gen += 1
 
         for ind in self.individuals:
-            if ind.objective === ind.dna:
+            if ind.objective == ind.dna:
                 self.found = True
 
     def show(self):
@@ -149,7 +149,7 @@ class Population:
 if __name__ == "__main__":
     obj = "Hello, world."
     population = Population(obj,
-                            elitism=0.01,
+                            elitism=0.02,
                             num_ind=2048,
                             crossover=0.8,
                             mutation=0.05)
