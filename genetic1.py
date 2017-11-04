@@ -135,6 +135,7 @@ class Population:
         for ind in self.individuals:
             if ind.objective == ind.dna:
                 self.found = True
+                self.best_individual = ind
 
     def show(self):
         for ind in self.individuals:
@@ -156,3 +157,4 @@ if __name__ == "__main__":
     while not population.found:
         population.run()
         population.show()
+    population.best_individual.show()
