@@ -2,12 +2,8 @@
 import string
 import random
 from random import choice
-#from numpy.random import choice
 import numpy as np
-from numpy import cumsum
-from numpy.random import rand
 import os
-from numba import jit
 
 lines = os.get_terminal_size().lines
 chars = string.ascii_letters + ',' + '.' + ' '
@@ -28,10 +24,14 @@ class Individual:
         new_dna = []
         half = random.randint(1, len(self.dna)-1)
         new_dna = self.dna[0:half] + other.dna[half:]
-        res = Individual(self.lenght, dna=new_dna, objective=self.objective)
-        res.calc_fitness()
-        res.mutate()
-        return res
+        res1 = Individual(self.lenght, dna=new_dna, objective=self.objective)
+        res1.calc_fitness()
+        res1.mutate()
+        new_dna = other.dna[0:half] + self.dna[half:]
+        res2 = Individual(self.lenght, dna=new_dna, objective=self.objective)
+        res2.calc_fitness()
+        res2.mutate()
+        return res1, res2
 
     def mutate(self):
         #if self.fitness > random.uniform(0.0, 0.9):
@@ -104,9 +104,7 @@ class Population:
         p1 = self.tournament(individuals)
         p2 = self.tournament(individuals)
         if random.uniform(0, 1) < 0.8:
-            c1 = p1.crossover(p2)
-            c2 = p2.crossover(p1)
-            return c1, c2
+            return p1.crossover(p2)
         else:
             return p1, p2
 
@@ -148,7 +146,8 @@ class Population:
 
 if __name__ == "__main__":
     obj = "Hello, world."
-    #obj = "Unicorns are fun. Dinosaurs too."
+    obj = "Unicorns are fun. Dinosaurs too."
+    #obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet elit sed lorem suscipit ullamcorper. Mauris est felis, maximus eu congue nec, tincidunt imperdiet odio. Phasellus eu lacus vitae odio feugiat consectetur ut id neque. Morbi sed nisi vitae tortor facilisis tempus. Suspendisse pharetra eros in est ultrices imperdiet. Aliquam at sem ac nisl aliquet aliquet. Pellentesque nec ipsum id odio dignissim faucibus."
     population = Population(obj,
                             elitism=0.01,
                             num_ind=2048,
