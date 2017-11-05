@@ -9,6 +9,9 @@ lines = os.get_terminal_size().lines
 chars = string.ascii_letters + ',' + '.' + ' '
 
 class Individual:
+
+    age = 0
+
     def __init__(self, lenght, dna=[], objective="", mutation=0.05):
         self.lenght = lenght
         self.fitness = 0
@@ -35,7 +38,7 @@ class Individual:
 
     def mutate(self):
         #if self.fitness > random.uniform(0.0, 0.9):
-        if self.mutation >= random.uniform(0.0, 1.0):
+        if self.mutation > random.uniform(0.0, 1.0):
             n = random.randint(0, (self.lenght // 2))
             for i in range(n):
                 self.dna[random.randint(0, self.lenght-1)] = choice(chars)
@@ -108,22 +111,29 @@ class Population:
         else:
             return p1, p2
 
+    def trim_by_age(self, individuals):
+        for ind in individuals:
+            ind.age += 1
+            if ind.age >= random.randint(80,100):
+                individuals.remove(ind)
+
     def get_elite(self, best_individuals):
         idx = round(self.elitism * self.num_individuals)
         return best_individuals[:idx]
 
     def run(self):
+        #self.trim_by_age(self.individuals)
         best_individuals = sorted(self.individuals,
                                   key = lambda x : x.fitness,
                                   reverse=True)
         self.avg_fitness = np.average([ind.fitness
                                        for ind in best_individuals])
         new_individuals = self.get_elite(best_individuals)
-        print(len(new_individuals))
 
         while len(new_individuals) != self.num_individuals:
             c1, c2 = self.select_parents(best_individuals)
             new_individuals.append(c1)
+            if len(new_individuals) == self.num_individuals: break
             new_individuals.append(c2)
 
         self.individuals = new_individuals
@@ -141,18 +151,19 @@ class Population:
               + str(self.gen)
               + "\tavg. fitness: "
               + str(self.avg_fitness)
-              + "\tElitism: " + str(self.elitism))
+              + "\nElitism: " + str(self.elitism)
+              + "\tPop. size: " + str(len(self.individuals)))
 
 
 if __name__ == "__main__":
     obj = "Hello, world."
-    obj = "Unicorns are fun. Dinosaurs too."
+    #obj = "Unicorns are fun. Dinosaurs too. I like Llamas."
     #obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet elit sed lorem suscipit ullamcorper. Mauris est felis, maximus eu congue nec, tincidunt imperdiet odio. Phasellus eu lacus vitae odio feugiat consectetur ut id neque. Morbi sed nisi vitae tortor facilisis tempus. Suspendisse pharetra eros in est ultrices imperdiet. Aliquam at sem ac nisl aliquet aliquet. Pellentesque nec ipsum id odio dignissim faucibus."
     population = Population(obj,
                             elitism=0.01,
                             num_ind=2048,
                             crossover=0.8,
-                            mutation=0.05)
+                            mutation=0.0)
     while not population.found:
         population.run()
         population.show()
