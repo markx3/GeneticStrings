@@ -158,12 +158,12 @@ class Population:
 if __name__ == "__main__":
     obj = "Hello, world."
     #obj = "Unicorns are fun. Dinosaurs too. I like Llamas."
-    #obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet elit sed lorem suscipit ullamcorper. Mauris est felis, maximus eu congue nec, tincidunt imperdiet odio. Phasellus eu lacus vitae odio feugiat consectetur ut id neque. Morbi sed nisi vitae tortor facilisis tempus. Suspendisse pharetra eros in est ultrices imperdiet. Aliquam at sem ac nisl aliquet aliquet. Pellentesque nec ipsum id odio dignissim faucibus."
+    obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet elit sed lorem suscipit ullamcorper. Mauris est felis, maximus eu congue nec, tincidunt imperdiet odio. Phasellus eu lacus vitae odio feugiat consectetur ut id neque. Morbi sed nisi vitae tortor facilisis tempus. Suspendisse pharetra eros in est ultrices imperdiet. Aliquam at sem ac nisl aliquet aliquet. Pellentesque nec ipsum id odio dignissim faucibus."
     population = Population(obj,
                             elitism=0.01,
                             num_ind=2048,
                             crossover=0.8,
-                            mutation=0.0)
+                            mutation=0.05)
     while not population.found:
         population.run()
         population.show()
