@@ -11,10 +11,10 @@ chars = string.ascii_letters + ',' + '.' + ' '
 class Individual:
 
     age = 0
+    fitness = 0
 
     def __init__(self, lenght, chromosome=[], objective="", mutation=0.05):
         self.lenght = lenght
-        self.fitness = 0
         self.objective = self.set_objective(objective)
         if len(chromosome) == 0:
             self.chromosome = self.generate_chromosome()
