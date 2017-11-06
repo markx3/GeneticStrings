@@ -12,27 +12,27 @@ class Individual:
 
     age = 0
 
-    def __init__(self, lenght, dna=[], objective="", mutation=0.05):
+    def __init__(self, lenght, chromosome=[], objective="", mutation=0.05):
         self.lenght = lenght
         self.fitness = 0
         self.objective = self.set_objective(objective)
-        if len(dna) == 0:
-            self.dna = self.generate_dna()
+        if len(chromosome) == 0:
+            self.chromosome = self.generate_chromosome()
         else:
-            self.dna = dna
+            self.chromosome = chromosome
         self.mutation = mutation
 
     def crossover(self, other):
-        new_dna = []
-        half = random.randint(1, len(self.dna)-1)
+        new_chromosome = []
+        half = random.randint(1, len(self.chromosome)-1)
 
-        new_dna = self.dna[0:half] + other.dna[half:]
-        child1 = Individual(self.lenght, dna=new_dna, objective=self.objective)
+        new_chromosome = self.chromosome[0:half] + other.chromosome[half:]
+        child1 = Individual(self.lenght, chromosome=new_chromosome, objective=self.objective)
         child1.calc_fitness()
         child1.mutate()
 
-        new_dna = other.dna[0:half] + self.dna[half:]
-        child2 = Individual(self.lenght, dna=new_dna, objective=self.objective)
+        new_chromosome = other.chromosome[0:half] + self.chromosome[half:]
+        child2 = Individual(self.lenght, chromosome=new_chromosome, objective=self.objective)
         child2.calc_fitness()
         child2.mutate()
         return child1, child2
@@ -42,21 +42,21 @@ class Individual:
         if self.mutation > random.uniform(0.0, 1.0):
             n = random.randint(0, (self.lenght // 2))
             for i in range(n):
-                self.dna[random.randint(0, self.lenght-1)] = choice(chars)
+                self.chromosome[random.randint(0, self.lenght-1)] = choice(chars)
             self.calc_fitness()
 
     def show(self):
         res = ""
-        for letter in self.dna:
+        for letter in self.chromosome:
             res = res + letter
         print(res)
 
     def calc_fitness(self):
         fitness = 0.0
-        for i in range(len(self.dna)):
-            if self.dna[i] == self.objective[i]:
+        for i in range(len(self.chromosome)):
+            if self.chromosome[i] == self.objective[i]:
                 fitness += 1.0
-        self.fitness = fitness/len(self.dna)
+        self.fitness = fitness/len(self.chromosome)
 
     def set_objective(self, objective):
         res = []
@@ -64,7 +64,7 @@ class Individual:
             res.append(char)
         return res
 
-    def generate_dna(self):
+    def generate_chromosome(self):
         res = []
         for char in self.objective:
             res.append(random.choice(chars))
@@ -131,19 +131,19 @@ class Population:
                                   reverse=True)
         self.avg_fitness = np.average([ind.fitness
                                        for ind in best_individuals])
-        new_individuals = self.get_elite(best_individuals)
+        children = self.get_elite(best_individuals)
 
-        while len(new_individuals) != self.num_individuals:
+        while len(children) != self.num_individuals:
             c1, c2 = self.select_parents(best_individuals)
-            new_individuals.append(c1)
-            if len(new_individuals) == self.num_individuals: break
-            new_individuals.append(c2)
+            children.append(c1)
+            if len(children) == self.num_individuals: break
+            children.append(c2)
 
-        self.individuals = new_individuals
+        self.individuals = children
         self.gen += 1
 
         for ind in self.individuals:
-            if ind.objective == ind.dna:
+            if ind.objective == ind.chromosome:
                 self.found = True
                 self.best_individual = ind
 
