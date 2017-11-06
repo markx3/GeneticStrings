@@ -16,7 +16,6 @@ class Individual:
         self.lenght = lenght
         self.fitness = 0
         self.objective = self.set_objective(objective)
-        self.ilness = False
         if len(dna) == 0:
             self.dna = self.generate_dna()
         else:
@@ -26,15 +25,17 @@ class Individual:
     def crossover(self, other):
         new_dna = []
         half = random.randint(1, len(self.dna)-1)
+
         new_dna = self.dna[0:half] + other.dna[half:]
-        res1 = Individual(self.lenght, dna=new_dna, objective=self.objective)
-        res1.calc_fitness()
-        res1.mutate()
+        child1 = Individual(self.lenght, dna=new_dna, objective=self.objective)
+        child1.calc_fitness()
+        child1.mutate()
+
         new_dna = other.dna[0:half] + self.dna[half:]
-        res2 = Individual(self.lenght, dna=new_dna, objective=self.objective)
-        res2.calc_fitness()
-        res2.mutate()
-        return res1, res2
+        child2 = Individual(self.lenght, dna=new_dna, objective=self.objective)
+        child2.calc_fitness()
+        child2.mutate()
+        return child1, child2
 
     def mutate(self):
         #if self.fitness > random.uniform(0.0, 0.9):
@@ -111,6 +112,8 @@ class Population:
         else:
             return p1, p2
 
+
+    ''' Not being used currently '''
     def trim_by_age(self, individuals):
         for ind in individuals:
             ind.age += 1
@@ -158,7 +161,8 @@ class Population:
 if __name__ == "__main__":
     obj = "Hello, world."
     #obj = "Unicorns are fun. Dinosaurs too. I like Llamas."
-    obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet elit sed lorem suscipit ullamcorper. Mauris est felis, maximus eu congue nec, tincidunt imperdiet odio. Phasellus eu lacus vitae odio feugiat consectetur ut id neque. Morbi sed nisi vitae tortor facilisis tempus. Suspendisse pharetra eros in est ultrices imperdiet. Aliquam at sem ac nisl aliquet aliquet. Pellentesque nec ipsum id odio dignissim faucibus."
+    #obj = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet elit sed lorem suscipit ullamcorper. Mauris est felis, maximus eu congue nec, tincidunt imperdiet odio. Phasellus eu lacus vitae odio feugiat consectetur ut id neque. Morbi sed nisi vitae tortor facilisis tempus. Suspendisse pharetra eros in est ultrices imperdiet. Aliquam at sem ac nisl aliquet aliquet. Pellentesque nec ipsum id odio dignissim faucibus."
+    obj = "Ser ou nao ser, eis a questao."
     population = Population(obj,
                             elitism=0.01,
                             num_ind=2048,
